@@ -1,4 +1,7 @@
 这是openrank杯2024比赛，This is AI的仓库。
+
+我们目前主要针对数据集进行处理
+
 这是一个简单的数据集可视化工具，使用的数据集是Seaborn自带的tips，后面可以直接更换：
 # 数据分析与可视化（pandas、matplotlib、seaborn、plotly、bokeh）
 ## 环境要求
