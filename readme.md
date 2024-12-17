@@ -232,4 +232,52 @@ plt.legend()
 plt.grid(True)
 plt.show()
 
+如何进行跨领域引用？
+1.定义与重要性：
+跨领域引用：指数据集相关论文在不同学科领域的引用情况，反映数据集的跨学科应用广泛性。
+重要性：跨领域引用量高的数据集具有更广泛的适用性和更高的学术价值，能够推动多学科的研究进展。
+2.计算方法：
+领域分类：
+自动分类：使用NLP技术和机器学习算法对引用论文进行自动领域分类。
+手动标注：对自动分类结果进行人工验证和修正，确保分类的准确性。
+跨领域引用量（Cross-domain Citations）：
+![image](https://github.com/user-attachments/assets/fe1b9835-7498-493e-bcef-e150d0b410af)
+代码示例如下：
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import make_pipeline
+import matplotlib.pyplot as plt
+import seaborn as sns
+# 假设 df_papers 包含 'title', 'abstract', 'keywords', 'field' 列
+df_papers = pd.DataFrame({
+    'title': ['Paper A', 'Paper B', 'Paper C', 'Paper D'],
+    'abstract': ['Abstract A', 'Abstract B', 'Abstract C', 'Abstract D'],
+    'keywords': ['Keyword1, Keyword2', 'Keyword3, Keyword4', 'Keyword1, Keyword3', 'Keyword2, Keyword4'],
+    'field': ['Computer Vision', 'Natural Language Processing', 'Biomedical', 'Robotics']
+})
+# 自动领域分类（示例使用预先标注的训练数据）
+# 在实际应用中，需要使用更多的训练数据和更复杂的模型
+vectorizer = TfidfVectorizer(stop_words='english')
+clf = MultinomialNB()
+model = make_pipeline(vectorizer, clf)
+# 假设已有训练数据
+train_data = pd.DataFrame({
+    'text': ['Image recognition in computer vision', 'Language models in NLP', 'Biomedical data analysis', 'Robotics and automation'],
+    'field': ['Computer Vision', 'Natural Language Processing', 'Biomedical', 'Robotics']
+})
+model.fit(train_data['text'], train_data['field'])
+# 预测领域
+df_papers['predicted_field'] = model.predict(df_papers['abstract'])
+# 统计跨领域引用量
+cross_domain_citations = df_papers['predicted_field'].value_counts()
+# 可视化
+plt.figure(figsize=(10, 6))
+sns.barplot(x=cross_domain_citations.index, y=cross_domain_citations.values, palette='viridis')
+plt.title('跨领域引用分布')
+plt.xlabel('学科领域')
+plt.ylabel('引用次数')
+plt.xticks(rotation=45)
+plt.show()
+
 
