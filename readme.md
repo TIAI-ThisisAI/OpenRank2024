@@ -197,3 +197,39 @@ c.分析不同年份出现的主要主题，通过主题的兴衰更好地理解
 2.指标计算：根据预定义的评价指标计算每个数据集的评分。
 3.评分体系：建立一个评分体系，将不同指标进行权重组合，生成综合评分，便于不同数据集之间的比较。
 
+那么如何构建多维度评价指标？
+一个全面的评价体系应涵盖多个维度，以全面反映数据集的使用情况和影响力。以下是三个关键的评价指标：
+a.引用数量与增长率
+b.跨领域引用
+c.核心引用网络
+引用数量与增长率
+**定义与重要性：**
+引用数量：指数据集相关论文被引用的总次数，是衡量数据集学术影响力的基本指标。
+引用增长率：指在特定时间段内引用数量的增长速度，反映数据集的持续影响力和未来潜力。
+代码示例：
+import pandas as pd
+import matplotlib.pyplot as plt
+# 假设 df_citations 包含 'year' 和 'citation_count' 列
+df_citations = pd.DataFrame({
+    'year': range(2010, 2024),
+    'citation_count': [50, 60, 70, 80, 90, 100, 110, 120, 130, 140, 150, 160, 170, 180]
+})
+# 计算总引用次数
+total_citations = df_citations['citation_count'].sum()
+# 计算年度增长率
+df_citations['growth_rate'] = df_citations['citation_count'].pct_change() * 100
+# 计算平均增长率（复合年增长率）
+cagr = ((df_citations['citation_count'].iloc[-1] / df_citations['citation_count'].iloc[0]) ** (1/(df_citations.shape[0]-1)) - 1) * 100
+print(f"总引用次数: {total_citations}")
+print(f"平均增长率 (CAGR): {cagr:.2f}%")
+# 可视化引用趋势
+plt.figure(figsize=(10, 6))
+plt.plot(df_citations['year'], df_citations['citation_count'], marker='o', label='引用次数')
+plt.title('年度引用次数变化趋势')
+plt.xlabel('年份')
+plt.ylabel('引用次数')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+
