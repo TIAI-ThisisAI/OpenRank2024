@@ -299,3 +299,26 @@ plt.show()
 跨领域引用量：可以通过对文献所属领域的分布进行统计来衡量。例如，“计算机视觉”领域中引用该数据集的论文数量为多少，“自然语言处理”领域有多少，等等。若一篇论文预测为多个领域，则可为其进行加权处理，或记为“多学科交叉”。
 不同领域的引用占比：除了单纯计算各领域的引用数量，也可以对比各领域引用占总引用量的百分比，帮助直观感受数据集在每个领域的影响程度。
 趋势分析（可选）：若能获取不同时期的引用数据，还可对各领域引用量在时间维度上进行分析，了解数据集的“跨领域扩散”进程。
+
+这里给出自动化分类的代码示例：
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import make_pipeline
+# 将标题和摘要合并，构建文本特征（示例做法，也可单独使用摘要或标题）
+train_texts = train_data['title'] + ' ' + train_data['abstract']
+train_labels = train_data['field']
+# 构建TF-IDF + 朴素贝叶斯的Pipeline
+model_pipeline = make_pipeline(
+    TfidfVectorizer(stop_words='english'),
+    MultinomialNB()
+)
+# 训练模型
+model_pipeline.fit(train_texts, train_labels)
+# 对测试集（待分类论文）的文本进行预测
+test_texts = test_data['title'] + ' ' + test_data['abstract']
+predicted_fields = model_pipeline.predict(test_texts)
+# 将预测结果合并到 test_data 中
+test_data['predicted_field'] = predicted_fields
+print("=== 预测结果 ===")
+print(test_data[['title', 'predicted_field']])
+
