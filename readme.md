@@ -322,3 +322,22 @@ test_data['predicted_field'] = predicted_fields
 print("=== 预测结果 ===")
 print(test_data[['title', 'predicted_field']])
 
+
+这里给出趋势分析的代码示例：
+import matplotlib.pyplot as plt
+# 假设 test_data 中还包含一列 'year' 表示论文年份
+# 为了演示，这里先随意生成一些年份
+import random
+years = [2020, 2021, 2022]
+test_data['year'] = [random.choice(years) for _ in range(len(test_data))]
+# 按年份和预测领域进行统计
+year_field_counts = test_data.groupby(['year', 'predicted_field']).size().reset_index(name='count')
+# 进一步可在这里选择用pivot_table来转成矩阵形式，便于可视化
+pivot_df = year_field_counts.pivot_table(index='year', columns='predicted_field', values='count', fill_value=0)
+# 绘制堆叠柱状图
+pivot_df.plot(kind='bar', stacked=True, figsize=(8, 5))
+plt.title('按年份统计跨领域引用量')
+plt.xlabel('年份')
+plt.ylabel('引用数')
+plt.legend(title='领域')
+plt.show()
