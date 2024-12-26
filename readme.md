@@ -341,3 +341,35 @@ plt.xlabel('年份')
 plt.ylabel('引用数')
 plt.legend(title='领域')
 plt.show()
+
+
+给出手工标注中抽样检查与人工验证的代码片段：
+import pandas as pd
+
+# 假设 test_data 是待分类的论文数据集，已包含 'predicted_field' 列
+# 示例数据
+test_data = pd.DataFrame({
+    'title': [
+        'A study on image segmentation with transformers',
+        'Dialogue generation using GPT-based models',
+        'An analysis of CT scans in diagnosing lung diseases'
+    ],
+    'abstract': [
+        'We investigate image segmentation performance using transformer models in computer vision...',
+        'This research focuses on dialogue generation with GPT-based models in NLP context...',
+        'CT scans are crucial in diagnosing lung diseases, providing new insights in medical imaging...'
+    ],
+    'predicted_field': [
+        'Computer Vision',
+        'Natural Language Processing',
+        'Medical Imaging'
+    ],
+    'year': [2020, 2021, 2022]
+})
+
+# 抽取10%的样本进行人工审核
+sample_size = int(0.1 * len(test_data))  # 根据数据量调整抽样比例
+sample_data = test_data.sample(n=sample_size, random_state=42).copy()
+
+print("=== 抽样检查样本 ===")
+print(sample_data)
