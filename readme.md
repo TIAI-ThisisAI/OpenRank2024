@@ -373,3 +373,204 @@ sample_data = test_data.sample(n=sample_size, random_state=42).copy()
 
 print("=== 抽样检查样本 ===")
 print(sample_data)
+
+
+给出跨领域引用分析整体示例代码：
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.pipeline import make_pipeline
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# --------------------------
+# 1. 数据准备
+# --------------------------
+
+# 原始训练数据
+train_data = pd.DataFrame({
+    'title': [
+        'Deep learning for image recognition',
+        'A novel NLP model for text generation',
+        'Advanced MRI techniques in medical imaging',
+        'Speech recognition with CNN and RNN',
+        'Transformer-based BERT model for question answering',
+        'COVID-19 detection in chest X-ray images'
+    ],
+    'abstract': [
+        'This paper explores deep learning for image classification in computer vision...',
+        'We propose a new approach for text generation using advanced NLP techniques...',
+        'MRI scans in medical imaging have shown potential for early disease detection...',
+        'Exploring CNN and RNN architectures for automatic speech recognition tasks...',
+        'This paper introduces a Transformer-based method for QA in NLP tasks...',
+        'Using deep CNN for detecting COVID-19 in chest X-ray images in the medical domain...'
+    ],
+    'field': [
+        'Computer Vision', 
+        'Natural Language Processing', 
+        'Medical Imaging', 
+        'Speech Processing', 
+        'Natural Language Processing', 
+        'Medical Imaging'
+    ]
+})
+
+# 待分类的测试数据
+test_data = pd.DataFrame({
+    'title': [
+        'A study on image segmentation with transformers',
+        'Dialogue generation using GPT-based models',
+        'An analysis of CT scans in diagnosing lung diseases'
+    ],
+    'abstract': [
+        'We investigate image segmentation performance using transformer models in computer vision...',
+        'This research focuses on dialogue generation with GPT-based models in NLP context...',
+        'CT scans are crucial in diagnosing lung diseases, providing new insights in medical imaging...'
+    ],
+    'year': [2020, 2021, 2022]
+})
+
+# --------------------------
+# 2. 自动化分类
+# --------------------------
+
+# 合并标题和摘要作为文本特征
+train_texts = train_data['title'] + ' ' + train_data['abstract']
+train_labels = train_data['field']
+
+test_texts = test_data['title'] + ' ' + test_data['abstract']
+
+# 构建TF-IDF + 朴素贝叶斯的Pipeline
+model_pipeline = make_pipeline(
+    TfidfVectorizer(stop_words='english'),
+    MultinomialNB()
+)
+
+# 训练模型
+model_pipeline.fit(train_texts, train_labels)
+
+# 对测试集进行预测
+predicted_fields = model_pipeline.predict(test_texts)
+test_data['predicted_field'] = predicted_fields
+
+print("=== 自动分类预测结果 ===")
+print(test_data[['title', 'predicted_field']])
+
+# --------------------------
+# 3. 手动标注
+# --------------------------
+
+# 抽取10%的样本进行人工审核
+sample_size = int(0.1 * len(test_data))  # 根据数据量调整抽样比例
+sample_data = test_data.sample(n=sample_size, random_state=42).copy()
+
+print("\n=== 抽样检查样本 ===")
+print(sample_data)
+
+# 模拟人工修正（实际应用中应由人工完成）
+# 例如，将第一个样本的预测领域修正为 'Computer Vision'
+if not sample_data.empty:
+    sample_index = sample_data.index[0]
+    test_data.loc[sample_index, 'predicted_field'] = 'Computer Vision'
+
+print("\n=== 修正后的样本 ===")
+print(test_data.loc[sample_index])
+
+# 将修正后的样本添加到训练集中
+# 这里只添加标题、摘要和修正后的领域标签
+corrected_sample = test_data.loc[sample_index].copy()
+corrected_sample = corrected_sample.rename({'predicted_field': 'field'})
+updated_train_data = pd.concat([train_data, corrected_sample[['title', 'abstract', 'field']]], ignore_index=True)
+
+# --------------------------
+# 4. 重新训练分类模型
+# --------------------------
+
+# 构建新的文本特征
+updated_train_texts = updated_train_data['title'] + ' ' + updated_train_data['abstract']
+updated_train_labels = updated_train_data['field']
+
+# 重新构建Pipeline并训练
+updated_model_pipeline = make_pipeline(
+    TfidfVectorizer(stop_words='english'),
+    MultinomialNB()
+)
+
+updated_model_pipeline.fit(updated_train_texts, updated_train_labels)
+
+# 对测试集进行重新预测
+updated_predicted_fields = updated_model_pipeline.predict(test_texts)
+test_data['predicted_field'] = updated_predicted_fields
+
+print("\n=== 重新训练后的预测结果 ===")
+print(test_data[['title', 'predicted_field']])
+
+# --------------------------
+# 5. 跨领域引用量统计
+# --------------------------
+
+# 统计各领域的引用数量
+field_counts = test_data['predicted_field'].value_counts()
+
+print("\n=== 各领域引用数量 ===")
+print(field_counts)
+
+# 计算各领域引用占比
+total_citations = field_counts.sum()
+field_percentages = (field_counts / total_citations) * 100
+
+print("\n=== 各领域引用占比 (%) ===")
+print(field_percentages)
+
+# 绘制柱状图
+sns.set(style="whitegrid")
+plt.figure(figsize=(10, 6))
+sns.barplot(x=field_counts.index, y=field_counts.values, palette='viridis')
+plt.title('跨领域引用分布')
+plt.xlabel('学科领域')
+plt.ylabel('引用数量')
+plt.xticks(rotation=45)
+plt.show()
+
+# 绘制饼图
+plt.figure(figsize=(8, 8))
+plt.pie(field_counts.values, labels=field_counts.index, autopct='%1.1f%%', startangle=140, colors=sns.color_palette('viridis', len(field_counts)))
+plt.title('各领域引用占比')
+plt.axis('equal')  # 保证饼图为圆形
+plt.show()
+
+# --------------------------
+# 6. （可选）趋势分析
+# --------------------------
+
+# 假设 test_data 中包含 'year' 列
+# 这里展示如何进行时间趋势分析
+
+# 按年份和预测领域进行统计
+year_field_counts = test_data.groupby(['year', 'predicted_field']).size().reset_index(name='count')
+
+print("\n=== 按年份和领域的引用统计 ===")
+print(year_field_counts)
+
+# 使用pivot_table转换为矩阵形式，便于绘图
+pivot_df = year_field_counts.pivot_table(index='year', columns='predicted_field', values='count', fill_value=0)
+
+# 绘制堆叠柱状图
+pivot_df.plot(kind='bar', stacked=True, figsize=(12, 7), colormap='viridis')
+plt.title('按年份统计跨领域引用量')
+plt.xlabel('年份')
+plt.ylabel('引用数')
+plt.legend(title='学科领域')
+plt.xticks(rotation=0)
+plt.show()
+
+# 绘制折线图（每个领域一条线）
+plt.figure(figsize=(12, 7))
+for field in pivot_df.columns:
+    plt.plot(pivot_df.index, pivot_df[field], marker='o', label=field)
+plt.title('各领域引用量的时间趋势')
+plt.xlabel('年份')
+plt.ylabel('引用数')
+plt.legend(title='学科领域')
+plt.grid(True)
+plt.show()
