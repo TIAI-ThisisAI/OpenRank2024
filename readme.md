@@ -1,10 +1,8 @@
-这是openrank杯2024比赛，This is AI的仓库。
+## 评估开源数据集的长期使用模式：一种引用网络视角
 
-参赛题目：评估开源数据集的长期使用模式：一种引用网络视角
+**此仓库内容已发表在：BenchCouncil 2024**
 
-参赛选手：张雨昂 张雨欣 彭佳恒 
-
-指导老师：王伟
+**Peng J, Han F, Wang W. Evaluating long-term usage patterns of open source datasets: A citation network approach[J]. BenchCouncil Transactions on Benchmarks, Standards and Evaluations, 2024, 4(4): 100199.**
 
 **1.介绍**
 
